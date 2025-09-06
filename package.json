@@ -1,6 +1,6 @@
 {
   "name": "@tryforge/forge.db",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Easy to use database for forge.",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
@@ -28,9 +28,10 @@
   "devDependencies": {
     "@tryforge/forgescript": "^2.3.0",
     "@types/node": "^20.5.7",
-    "better-sqlite3": "^11.10.0",
-    "mongodb": "^6.16.0",
+    "discord.js": "^14.22.1",
+    "mongodb": "^6.19.0",
     "prettier": "^3.5.3",
+    "sqlite3": "^5.1.7",
     "typedoc": "^0.25.0",
     "typescript": "^5.2.2"
   },
@@ -50,6 +51,6 @@
   },
   "dependencies": {
     "tiny-typed-emitter": "^2.1.0",
-    "typeorm": "^0.3.24"
+    "typeorm": "^0.3.26"
   }
 }

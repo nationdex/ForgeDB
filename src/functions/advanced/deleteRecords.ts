@@ -1,5 +1,6 @@
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { DataBase, RecordData, VariableType } from "../../util"
+import { Like } from "typeorm"
 
 export default new NativeFunction({
     name: "$deleteRecords",
@@ -50,10 +51,10 @@ export default new NativeFunction({
     async execute(_ctx, [name, id, type, value, guild]) {
         let search = {}
 
-        if (name) search = { ...search, name }
+        if (name) search = { ...search, name: Like(name) }
         if (id) search = { ...search, id }
         if (type) search = { ...search, type: VariableType[type]?.toString() }
-        if (value) search = { ...search, value }
+        if (value) search = { ...search, value: Like(value) }
         if (guild) search = { ...search, guildId: guild.id }
 
         for (const record of await DataBase.find({ ...search })) {
