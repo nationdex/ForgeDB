@@ -35,7 +35,7 @@ exports.default = new forgescript_1.NativeFunction({
     brackets: true,
     async execute(ctx, [name, sortType, channel]) {
         const data = await util_1.DataBase.find({ name, type: "channel", guildId: channel?.guild.id ?? ctx.guild?.id });
-        const index = data.sort((x, y) => (sortType === util_1.SortType.desc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))).findIndex((s) => s.id === (channel ?? ctx.channel?.id));
+        const index = data.sort((x, y) => (sortType === util_1.SortType.asc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))).findIndex((s) => s.id === (channel ?? ctx.channel?.id));
         return this.success(index + 1);
     },
 });
