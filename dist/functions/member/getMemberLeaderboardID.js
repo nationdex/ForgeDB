@@ -40,7 +40,7 @@ exports.default = new forgescript_1.NativeFunction({
     output: forgescript_1.ArgType.Member,
     async execute(ctx, [name, sortType, pos, guild]) {
         const data = await util_1.DataBase.find({ name, type: "member", guildId: guild?.id ?? ctx.guild.id });
-        const member = data.sort((x, y) => (sortType === util_1.SortType.desc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value)))[pos - 1];
+        const member = data.sort((x, y) => (sortType === util_1.SortType.asc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value)))[pos - 1];
         return this.success(member?.id);
     },
 });

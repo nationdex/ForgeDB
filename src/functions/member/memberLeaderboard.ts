@@ -96,7 +96,7 @@ export default new NativeFunction({
 
         const elements = new Array<string>()
         const rows = await DataBase.find({ name: nameV.value as string, type: "member", guildId: (guildID.value as string) ?? ctx.guild!.id })
-            .then((x) => x.sort((x, y) => (sortTypeV?.value === "desc" ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))))
+            .then((x) => x.sort((x, y) => (sortTypeV?.value === "asc" ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))))
             .then((x) => x.slice(pag * limit - limit, pag * limit))
 
         for (let i = 0, len = rows.length; i < len; i++) {

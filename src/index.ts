@@ -11,7 +11,7 @@ export class ForgeDB extends ForgeExtension {
     public static defaults?: Record<PropertyKey, IExtendedCompilationResult | unknown>
 
     name: string = "forge.db"
-    description: string = "A fast and reliable database extension for Forge"
+    description: string = "A fast and reliable database extension for ForgeScript."
     version: string = require("../package.json").version
 
     public commands!: any

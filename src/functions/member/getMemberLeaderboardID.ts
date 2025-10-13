@@ -39,7 +39,7 @@ export default new NativeFunction({
     output: ArgType.Member,
     async execute(ctx, [name, sortType, pos, guild]) {
         const data = await DataBase.find({ name, type: "member", guildId: guild?.id ?? ctx.guild!.id })
-        const member = data.sort((x, y) => (sortType === SortType.desc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value)))[pos - 1]
+        const member = data.sort((x, y) => (sortType === SortType.asc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value)))[pos - 1]
         return this.success(member?.id)
     },
 })

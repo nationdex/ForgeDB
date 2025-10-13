@@ -34,7 +34,7 @@ export default new NativeFunction({
     brackets: true,
     async execute(ctx, [name, sortType, user]) {
         const data = await DataBase.find({ name, type: "user" })
-        const index = data.sort((x, y) => (sortType === SortType.desc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))).findIndex((s) => s.id === (user ?? ctx.user?.id))
+        const index = data.sort((x, y) => (sortType === SortType.asc ? Number(x.value) - Number(y.value) : Number(y.value) - Number(x.value))).findIndex((s) => s.id === (user ?? ctx.user?.id))
         return this.success(index + 1)
     },
 })
