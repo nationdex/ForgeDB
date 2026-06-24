@@ -40,8 +40,17 @@ export type IDataBaseOptions = (
           url: string
       }
     | {
-          type: "better-sqlite3" | "sqlite"
+          type: "sqlite"
           folder?: string
+      }
+    | {
+          type: "better-sqlite3"
+          folder?: string
+          /**
+           * Enables SQLite WAL mode via TypeORM for better read/write concurrency.
+           * Defaults to `true`. Set to `false` to keep the database's existing journal mode.
+           */
+          enableWAL?: boolean
       }
 ) & { events?: Array<keyof IDBEvents> }
 

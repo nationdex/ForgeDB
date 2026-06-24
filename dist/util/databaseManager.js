@@ -45,14 +45,19 @@ class DataBaseManager {
                     synchronize: true,
                 });
                 break;
-            default:
+            default: {
+                const { events: _events, ...sqliteOptions } = data;
                 db = new typeorm_1.DataSource({
-                    ...data,
+                    ...sqliteOptions,
                     entities: this.entityManager.sqlite,
                     synchronize: true,
                     database: `${data.folder ?? "database"}/${this.database}`,
+                    ...(data.type === "better-sqlite3"
+                        ? { enableWAL: data.enableWAL !== false }
+                        : {}),
                 });
                 break;
+            }
         }
         db = await db.initialize();
         activeDataBases.push({ name: this.database, db });

@@ -55,14 +55,19 @@ export abstract class DataBaseManager {
                     synchronize: true,
                 })
                 break;
-            default:
+            default: {
+                const { events: _events, ...sqliteOptions } = data
                 db = new DataSource({
-                    ...data,
+                    ...sqliteOptions,
                     entities: this.entityManager.sqlite,
                     synchronize: true,
                     database: `${data.folder ?? "database"}/${this.database}`,
+                    ...(data.type === "better-sqlite3"
+                        ? { enableWAL: data.enableWAL !== false }
+                        : {}),
                 })
-            break;
+                break
+            }
         }
         db = await db.initialize()
         activeDataBases.push({ name: this.database, db })
