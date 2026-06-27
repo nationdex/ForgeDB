@@ -1,14 +1,14 @@
-import { execSync } from "child_process"
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
-import { join } from "path"
-import { platform } from "os"
-import { stdin, stdout } from "process"
-import { createInterface } from "readline"
+import { execSync } from "node:child_process"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { platform } from "node:os"
+import { join } from "node:path"
+import { stdin, stdout } from "node:process"
+import { createInterface } from "node:readline"
 
 export async function prompt(q: string) {
     const itf = createInterface(stdin, stdout)
-    return new Promise<string>(r => {
-        itf.question(q, input => {
+    return new Promise<string>((r) => {
+        itf.question(q, (input) => {
             itf.close()
             r(input)
         })
@@ -23,10 +23,10 @@ const version = require("../package.json").version
 async function main() {
     let skip = false
 
-    const msg = (await prompt("Please write the commit message: ")).replace(
-        /(--?(\w+))/gim, (match) => {
+    const msg = (await prompt("Please write the commit message: "))
+        .replace(/(--?(\w+))/gim, (match) => {
             const name = /(\w+)/.exec(match)![1].toLowerCase()
-        
+
             switch (name) {
                 case "hide": {
                     skip = true
@@ -39,8 +39,8 @@ async function main() {
             }
 
             return ""
-        } 
-    ).trim()
+        })
+        .trim()
 
     const fileName = join(path, "changelogs.json")
     const json: Record<string, object[]> = existsSync(fileName) ? JSON.parse(readFileSync(fileName, "utf-8")) : {}
@@ -50,17 +50,17 @@ async function main() {
         json[version].unshift({
             message: msg,
             timestamp: new Date(),
-            author
+            author,
         })
         writeFileSync(fileName, JSON.stringify(json), "utf-8")
     }
 
-    const branch = await prompt("Write the branch name to push to (defaults to dev): ") || "dev"
+    const branch = (await prompt("Write the branch name to push to (defaults to dev): ")) || "dev"
     let escapedMsg = msg
     if (platform() === "darwin") escapedMsg = escapedMsg.replace(/\$/g, "\\$")
 
-    execSync("git branch -M " + branch + " && git add . && git commit -m \"" + escapedMsg + "\" && git push -u origin " + branch, {
-        stdio: "inherit"
+    execSync(`git branch -M ${branch} && git add . && git commit -m "${escapedMsg}" && git push -u origin ${branch}`, {
+        stdio: "inherit",
     })
 }
 

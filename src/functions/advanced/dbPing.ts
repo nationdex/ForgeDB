@@ -1,6 +1,6 @@
+import { performance } from "node:perf_hooks"
 import { ArgType, NativeFunction } from "@tryforge/forgescript"
 import { DataBase } from "../../util"
-import { performance } from "perf_hooks"
 
 export default new NativeFunction({
     name: "$dbPing",

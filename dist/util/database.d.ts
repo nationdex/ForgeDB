@@ -1,7 +1,7 @@
-import { Cooldown, IDataBaseOptions, MongoCooldown, MongoRecord, MySQLRecord, PostgreSQLRecord, RecordData, SQLiteRecord } from "./types";
-import { TypedEmitter } from "tiny-typed-emitter";
-import { IDBEvents } from "../structures";
-import { TransformEvents } from "..";
+import type { TypedEmitter } from "tiny-typed-emitter";
+import type { TransformEvents } from "..";
+import type { IDBEvents } from "../structures";
+import { Cooldown, type IDataBaseOptions, MongoCooldown, MongoRecord, MySQLRecord, PostgreSQLRecord, type RecordData, SQLiteRecord } from "./types";
 import "reflect-metadata";
 import { DataBaseManager } from "./databaseManager";
 export declare class DataBase extends DataBaseManager {

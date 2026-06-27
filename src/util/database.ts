@@ -1,8 +1,8 @@
-import { Cooldown, GuildData, IDataBaseOptions, MongoCooldown, MongoRecord, MySQLRecord, PostgreSQLRecord, RecordData, SQLiteRecord } from "./types"
-import { DataSource } from "typeorm"
-import { TypedEmitter } from "tiny-typed-emitter"
-import { IDBEvents } from "../structures"
-import { TransformEvents } from ".."
+import type { TypedEmitter } from "tiny-typed-emitter"
+import type { DataSource } from "typeorm"
+import type { TransformEvents } from ".."
+import type { IDBEvents } from "../structures"
+import { Cooldown, type GuildData, type IDataBaseOptions, MongoCooldown, MongoRecord, MySQLRecord, PostgreSQLRecord, type RecordData, SQLiteRecord } from "./types"
 import "reflect-metadata"
 import { DataBaseManager } from "./databaseManager"
 
@@ -33,12 +33,12 @@ export class DataBase extends DataBaseManager {
         private emitter: TypedEmitter<TransformEvents<IDBEvents>>,
         options?: IDataBaseOptions
     ) {
-        super(options ?? {type: "sqlite"})
-        this.type = options?.type  || "sqlite"
+        super(options ?? { type: "sqlite" })
+        this.type = options?.type || "sqlite"
         this.db = this.getDB()
         DataBase.entities = {
-            Record: this.entityManager[this.type == "better-sqlite3" ? "sqlite" : this.type][0] as AnyRecord,
-            Cooldown: this.entityManager[this.type == "better-sqlite3" ? "sqlite" : this.type][1] as AnyCooldown,
+            Record: this.entityManager[this.type === "better-sqlite3" ? "sqlite" : this.type][0] as AnyRecord,
+            Cooldown: this.entityManager[this.type === "better-sqlite3" ? "sqlite" : this.type][1] as AnyCooldown,
         }
     }
 
@@ -49,83 +49,83 @@ export class DataBase extends DataBaseManager {
     }
 
     public static make_intetifier(data: RecordData) {
-        return `${data.type}_${data.name}_${isGuildData(data) ? data.guildId + "_" : ""}${data.id}`
+        return `${data.type}_${data.name}_${isGuildData(data) ? `${data.guildId}_` : ""}${data.id}`
     }
 
     public static async set(data: RecordData) {
-        const newData = new this.entities.Record()
-        newData.identifier = this.make_intetifier(data)
+        const newData = new DataBase.entities.Record()
+        newData.identifier = DataBase.make_intetifier(data)
         newData.name = data.name!
         newData.id = data.id!
         newData.type = data.type!
         newData.value = data.value!
         if (isGuildData(data)) newData.guildId = data.guildId
-        const oldData = (await this.db.getRepository(this.entities.Record).findOneBy({ identifier: this.make_intetifier(data) })) as SQLiteRecord
-        if (oldData && this.type == "mongodb") {
-            this.emitter.emit("variableUpdate", { newData, oldData })
-            this.db.getRepository(this.entities.Record).update(oldData, newData)
+        const oldData = (await DataBase.db.getRepository(DataBase.entities.Record).findOneBy({ identifier: DataBase.make_intetifier(data) })) as SQLiteRecord
+        if (oldData && DataBase.type === "mongodb") {
+            DataBase.emitter.emit("variableUpdate", { newData, oldData })
+            DataBase.db.getRepository(DataBase.entities.Record).update(oldData, newData)
         } else {
-            oldData ? this.emitter.emit("variableUpdate", { newData, oldData }) : this.emitter.emit("variableCreate", { data: newData })
-            await this.db.getRepository(this.entities.Record).save(newData)
+            oldData ? DataBase.emitter.emit("variableUpdate", { newData, oldData }) : DataBase.emitter.emit("variableCreate", { data: newData })
+            await DataBase.db.getRepository(DataBase.entities.Record).save(newData)
         }
     }
 
     public static async get(data: RecordData) {
-        const identifier = data.identifier ?? this.make_intetifier(data)
-        return await this.db.getRepository(this.entities.Record).findOneBy({ identifier })
+        const identifier = data.identifier ?? DataBase.make_intetifier(data)
+        return await DataBase.db.getRepository(DataBase.entities.Record).findOneBy({ identifier })
     }
 
     public static async getAll() {
-        return await this.db.getRepository(this.entities.Record).find()
+        return await DataBase.db.getRepository(DataBase.entities.Record).find()
     }
 
     public static async find(data?: RecordData) {
-        return await this.db.getRepository(this.entities.Record).find({
+        return await DataBase.db.getRepository(DataBase.entities.Record).find({
             where: { ...data },
         })
     }
 
     public static async delete(data: RecordData) {
-        const identifier = data.identifier ?? this.make_intetifier(data)
-        this.emitter.emit("variableDelete", { data: (await this.db.getRepository(this.entities.Record).findOneBy({ identifier })) as SQLiteRecord })
-        return await this.db.getRepository(this.entities.Record).delete({ identifier })
+        const identifier = data.identifier ?? DataBase.make_intetifier(data)
+        DataBase.emitter.emit("variableDelete", { data: (await DataBase.db.getRepository(DataBase.entities.Record).findOneBy({ identifier })) as SQLiteRecord })
+        return await DataBase.db.getRepository(DataBase.entities.Record).delete({ identifier })
     }
 
     public static async wipe() {
-        return await this.db.getRepository(this.entities.Record).clear()
+        return await DataBase.db.getRepository(DataBase.entities.Record).clear()
     }
 
     public static async cdWipe() {
-        return await this.db.getRepository(this.entities.Cooldown).clear()
+        return await DataBase.db.getRepository(DataBase.entities.Cooldown).clear()
     }
 
     public static make_cdIdentifier(data: { name?: string; id?: string }) {
-        return `${data.name}${data.id ? "_" + data.id : ""}`
+        return `${data.name}${data.id ? `_${data.id}` : ""}`
     }
 
     public static async cdAdd(data: { name: string; id?: string; duration: number }) {
-        const cd = new this.entities.Cooldown()
-        cd.identifier = this.make_cdIdentifier(data)
+        const cd = new DataBase.entities.Cooldown()
+        cd.identifier = DataBase.make_cdIdentifier(data)
         cd.name = data.name
         cd.id = data.id
         cd.startedAt = Date.now()
         cd.duration = data.duration
 
-        const oldCD = await this.db.getRepository(this.entities.Cooldown).findOneBy({ identifier: this.make_cdIdentifier(data) })
-        if (oldCD && this.type == "mongodb") return await this.db.getRepository(this.entities.Cooldown).update(oldCD, cd)
-        else return await this.db.getRepository(this.entities.Cooldown).save(cd)
+        const oldCD = await DataBase.db.getRepository(DataBase.entities.Cooldown).findOneBy({ identifier: DataBase.make_cdIdentifier(data) })
+        if (oldCD && DataBase.type === "mongodb") return await DataBase.db.getRepository(DataBase.entities.Cooldown).update(oldCD, cd)
+        else return await DataBase.db.getRepository(DataBase.entities.Cooldown).save(cd)
     }
 
     public static async cdDelete(identifier: string) {
-        await this.db.getRepository(this.entities.Cooldown).delete({ identifier })
+        await DataBase.db.getRepository(DataBase.entities.Cooldown).delete({ identifier })
     }
 
     public static async cdTimeLeft(identifier: string) {
-        const data = await this.db.getRepository(this.entities.Cooldown).findOneBy({ identifier })
+        const data = await DataBase.db.getRepository(DataBase.entities.Cooldown).findOneBy({ identifier })
         return data ? { ...data, left: Math.max(data.duration - (Date.now() - data.startedAt), 0) } : { left: 0 }
     }
 
     public static async query(query: string) {
-        return await this.db.query(query)
+        return await DataBase.db.query(query)
     }
 }

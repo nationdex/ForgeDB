@@ -1,4 +1,4 @@
-import { IDBEvents } from "../structures";
+import type { IDBEvents } from "../structures";
 export declare enum SortType {
     asc = 0,
     desc = 1

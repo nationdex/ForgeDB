@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataBaseManager = void 0;
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
+const resolveDriver_1 = require("./resolveDriver");
 const activeDataBases = [];
 let config;
 class DataBaseManager {
@@ -18,8 +19,8 @@ class DataBaseManager {
         await this.waitForConfig();
         this.type = config.type;
         DataBaseManager.type = this.type;
-        const check = activeDataBases.find((s) => s.name == this.database);
-        if (check?.name == this.database)
+        const check = activeDataBases.find((s) => s.name === this.database);
+        if (check?.name === this.database)
             return check.db;
         const data = { ...config };
         let db;
@@ -52,9 +53,8 @@ class DataBaseManager {
                     entities: this.entityManager.sqlite,
                     synchronize: true,
                     database: `${data.folder ?? "database"}/${this.database}`,
-                    ...(data.type === "better-sqlite3"
-                        ? { enableWAL: data.enableWAL !== false }
-                        : {}),
+                    driver: (0, resolveDriver_1.resolveSqliteDriver)(data.type),
+                    ...(data.type === "better-sqlite3" ? { enableWAL: data.enableWAL !== false } : {}),
                 });
                 break;
             }

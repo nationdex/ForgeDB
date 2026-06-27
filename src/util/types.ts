@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryColumn, ObjectIdColumn } from "typeorm"
-import { IDBEvents } from "../structures"
+import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
+import type { IDBEvents } from "../structures"
 
 export enum SortType {
     asc,

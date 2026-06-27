@@ -1,4 +1,4 @@
 export * from "./database";
-export * from "./types";
 export * from "./databaseManager";
+export * from "./types";
 //# sourceMappingURL=index.d.ts.map

@@ -1,9 +1,10 @@
-import "reflect-metadata";
-import { IDataBaseOptions } from "./types";
-import { DataSource, EntitySchema, MixedList } from "typeorm";
+import "reflect-metadata"
+import { DataSource, type EntitySchema, type MixedList } from "typeorm"
+import { resolveSqliteDriver } from "./resolveDriver"
+import type { IDataBaseOptions } from "./types"
 
-const activeDataBases: { name: string; db: DataSource }[] = [];
-let config: IDataBaseOptions;
+const activeDataBases: { name: string; db: DataSource }[] = []
+let config: IDataBaseOptions
 
 export abstract class DataBaseManager {
     public abstract database: string
@@ -25,14 +26,14 @@ export abstract class DataBaseManager {
     }
 
     protected async getDB() {
-        await this.waitForConfig();
+        await this.waitForConfig()
         this.type = config.type
         DataBaseManager.type = this.type
 
-        const check = activeDataBases.find((s) => s.name == this.database)
-        if (check?.name == this.database) return check.db;
-        const data: IDataBaseOptions = { ...config };
-        let db;
+        const check = activeDataBases.find((s) => s.name === this.database)
+        if (check?.name === this.database) return check.db
+        const data: IDataBaseOptions = { ...config }
+        let db: DataSource
         switch (data.type) {
             case "mysql":
                 db = new DataSource({
@@ -40,21 +41,21 @@ export abstract class DataBaseManager {
                     entities: this.entityManager.mysql,
                     synchronize: true,
                 })
-                break;
+                break
             case "postgres":
                 db = new DataSource({
                     ...data,
                     entities: this.entityManager.postgres,
                     synchronize: true,
                 })
-                break;
+                break
             case "mongodb":
                 db = new DataSource({
                     ...data,
                     entities: this.entityManager.mongodb,
                     synchronize: true,
                 })
-                break;
+                break
             default: {
                 const { events: _events, ...sqliteOptions } = data
                 db = new DataSource({
@@ -62,9 +63,8 @@ export abstract class DataBaseManager {
                     entities: this.entityManager.sqlite,
                     synchronize: true,
                     database: `${data.folder ?? "database"}/${this.database}`,
-                    ...(data.type === "better-sqlite3"
-                        ? { enableWAL: data.enableWAL !== false }
-                        : {}),
+                    driver: resolveSqliteDriver(data.type),
+                    ...(data.type === "better-sqlite3" ? { enableWAL: data.enableWAL !== false } : {}),
                 })
                 break
             }
@@ -74,17 +74,17 @@ export abstract class DataBaseManager {
         return db
     }
 
-    private async waitForConfig(){
+    private async waitForConfig() {
         return new Promise((resolve) => {
             const check = setInterval(() => {
-                if(config){
+                if (config) {
                     clearInterval(check)
                     resolve(config)
                 }
             }, 50)
             setTimeout(() => {
                 clearInterval(check)
-                if(!config) throw new Error("Unable to resolve ForgeDB extension configuration. Dependent packages failed to initialize.")
+                if (!config) throw new Error("Unable to resolve ForgeDB extension configuration. Dependent packages failed to initialize.")
             }, 10_000)
         })
     }
